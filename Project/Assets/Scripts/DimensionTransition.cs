@@ -2,8 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
 using Cinemachine;
-using Unity.PlasticSCM.Editor.WebApi;
-
+using System.Net;
 [ExecuteInEditMode]
 public class DimensionTransition : MonoBehaviour
 {
@@ -11,15 +10,11 @@ public class DimensionTransition : MonoBehaviour
     [SerializeField] private GameObject player3DModel;
 
     [Header("Curve")]
-    [SerializeField] private Vector2 targetPoint = Vector2.one * 5;
-    [SerializeField] private Vector3 startCurvePoint;
-    [SerializeField] private Vector3 endCurvePoint;
     [SerializeField] private float transitionTime = 1;
-
+    [HideInInspector] public Vector3 startTangent = Vector3.zero;
+    [HideInInspector] public Vector3 endTangent = Vector3.zero;
+    [HideInInspector] public  Vector3 endPoint = new Vector3(5,5,0);
     private Vector3 startPoint => transform.position;
-    private Vector3 endPoint => transform.position + (Vector3)targetPoint;
-    private Vector3 startTangent => transform.position + startCurvePoint;
-    private Vector3 endTangent => transform.position + endCurvePoint;
     private BoxCollider2D[] box2DColliders => GetComponents<BoxCollider2D>();
     private CinemachineVirtualCamera virtualCamera => FindObjectOfType<CinemachineVirtualCamera>();
     private bool isTraveling;
@@ -87,20 +82,22 @@ public class DimensionTransition : MonoBehaviour
         }
     }
 
-    private void UpdateBoxColliders()
+    public  void UpdateBoxColliders()
     {
         if (box2DColliders.Length < 2) return;
 
         box2DColliders[0].offset = Vector2.zero;
-        box2DColliders[1].offset = targetPoint;
+        box2DColliders[1].offset = transform.InverseTransformPoint(endPoint);
 
         foreach (var collider in box2DColliders)
         {
             collider.isTrigger = true;
         }
     }
+
     public IEnumerator TravelTransition(Player2DController player, Vector3 targetPosition, Vector3 startTangent, Vector3 endTangent, float totalTransitionTime)
     {
+        Debug.Log(targetPosition);
         isTraveling = true;
         Vector3 playerPositon = player.transform.position;
         player.gameObject.SetActive(false);
@@ -109,11 +106,11 @@ public class DimensionTransition : MonoBehaviour
         model3D.transform.localScale = Vector3.one * 0.5f;
         virtualCamera.Follow = model3D.transform;
 
-        float t = 0;
-        while (t < totalTransitionTime)
+        float elapseTime = 0;
+        while (elapseTime < totalTransitionTime)
         {
-            float nextT = t + Time.deltaTime / totalTransitionTime;
-            if (nextT > 1) nextT = 1;
+            float t = elapseTime / totalTransitionTime;
+            float nextT = Mathf.Min((elapseTime + Time.deltaTime) / totalTransitionTime, 1);
 
             Vector3 currentCurvePoint = GetPointOnBezierCurve(playerPositon, startTangent, endTangent, targetPosition, t);
             Vector3 nextCurvePoint = GetPointOnBezierCurve(playerPositon, startTangent, endTangent, targetPosition, nextT);
@@ -121,7 +118,7 @@ public class DimensionTransition : MonoBehaviour
             model3D.transform.position = currentCurvePoint;
             model3D.transform.LookAt(nextCurvePoint);
 
-            t += Time.deltaTime / totalTransitionTime;
+            elapseTime += Time.deltaTime;
             yield return null;
         }
         
@@ -148,36 +145,6 @@ public class DimensionTransition : MonoBehaviour
         return result;
     }
 
-
-
-    public void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawSphere(transform.position, 0.15f);
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawSphere(startTangent, 0.15f);
-        Gizmos.DrawSphere(endTangent, 0.15f);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(endPoint, 0.15f);
-
-
-        Gizmos.color = Color.yellow;
-        Vector3 previousPoint = startPoint;
-        int segments = 16;
-
-        for (int i = 1; i <= segments; i++)
-        {
-            float t = i / (float)segments;
-            Vector3 currentPoint = GetPointOnBezierCurve(startPoint, startTangent, endTangent, endPoint, t);
-
-            Gizmos.DrawLine(previousPoint, currentPoint);
-            previousPoint = currentPoint;
-        }
-    }
-
-
     private void OnTriggerEnter2D(Collider2D collider) 
     {
         if(collider.GetComponent<Player2DController>()){
@@ -192,9 +159,25 @@ public class DimensionTransition : MonoBehaviour
         }
     }
 
-    private void OnValidate()
+
+    public void OnDrawGizmos()
     {
-        UpdateBoxColliders();
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(transform.position, 0.15f);
+
+
+        Gizmos.color = Color.yellow;
+        Vector3 previousPoint = startPoint;
+        int segments = 16;
+
+        for (int i = 1; i <= segments; i++)
+        {
+            float t = i / (float)segments;
+            Vector3 currentPoint = GetPointOnBezierCurve(startPoint, startTangent, endTangent, endPoint, t);
+
+            Gizmos.DrawLine(previousPoint, currentPoint);
+            previousPoint = currentPoint;
+        }
     }
 
 }
