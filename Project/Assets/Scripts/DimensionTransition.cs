@@ -11,6 +11,7 @@ public class DimensionTransition : MonoBehaviour
 
     [Header("Curve")]
     [SerializeField] private float transitionTime = 1;
+    [SerializeField] private GameObject endPortal;
     [HideInInspector] public Vector3 startTangent = Vector3.zero;
     [HideInInspector] public Vector3 endTangent = Vector3.zero;
     [HideInInspector] public  Vector3 endPoint = new Vector3(5,5,0);
@@ -88,6 +89,7 @@ public class DimensionTransition : MonoBehaviour
 
         box2DColliders[0].offset = Vector2.zero;
         box2DColliders[1].offset = transform.InverseTransformPoint(endPoint);
+        if (endPortal) endPortal.transform.position = endPoint;
 
         foreach (var collider in box2DColliders)
         {

@@ -6102,7 +6102,7 @@ GameObject:
   - component: {fileID: 1540473795}
   - component: {fileID: 1540473794}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Portal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6227,8 +6227,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player3DModel: {fileID: 919132149155446097, guid: d529cbe309fc3e541a63a15694cf4ece, type: 3}
   transitionTime: 1.5
-  startTangent: {x: 10.239695, y: 2.0344315, z: -5.53532}
-  endTangent: {x: 15.915075, y: 3.6284246, z: -5.705489}
+  startTangent: {x: 11.190024, y: 1.7104555, z: -5.5351562}
+  endTangent: {x: 13.906427, y: 2.570104, z: -5.705078}
   endPoint: {x: 15.967886, y: 3.5042276, z: 0}
 --- !u!1 &1576374819
 GameObject:
