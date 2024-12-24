@@ -45,8 +45,12 @@ namespace PlayerSystem
         {
             groundTrigger.OnTriggerEnter2DAction.AddListener((other) =>
             {
-                if (other.gameObject.tag == "Ground")
+                if (other.gameObject.tag == "Ground" || other.gameObject.CompareTag("Platform"))
                 {
+                    if (other.gameObject.CompareTag("Platform"))
+                    {
+                        other.gameObject.GetComponent<IPlatform>()?.PlatformEnterAction(playerState, rb2d);
+                    }
                     playerState.groundState = GroundState.Grounded;
                     eventBus.Publish(new GroundedMovementEvent());
                 }
@@ -54,8 +58,12 @@ namespace PlayerSystem
 
             groundTrigger.OnTriggerExit2DAction.AddListener((other) =>
             {
-                if (other.gameObject.tag == "Ground")
+                if (other.gameObject.tag == "Ground" || other.gameObject.CompareTag("Platform"))
                 {
+                    if (other.gameObject.CompareTag("Platform"))
+                    {
+                        other.gameObject.GetComponent<IPlatform>()?.PlatformExitAction(rb2d);
+                    }
                     playerState.groundState = GroundState.Airborne;
                     eventBus.Publish(new UngroundedMovementEvent());
                 }

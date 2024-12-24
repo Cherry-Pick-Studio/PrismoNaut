@@ -5,6 +5,8 @@ namespace PlayerSystem
     public class TrianglePowerModule
     {
         private EventBus eventBus;
+        private PlayerState playerState;
+
         private Rigidbody2D rb2d;
         private TriggerEventHandler upTrigger;
 
@@ -13,9 +15,10 @@ namespace PlayerSystem
         private float cooldownTimeLeft = 0f;
         private bool isActive = false;
 
-        public TrianglePowerModule(EventBus eventBus, Rigidbody2D rb2d, TriggerEventHandler upTrigger)
+        public TrianglePowerModule(EventBus eventBus, PlayerState playerState, Rigidbody2D rb2d, TriggerEventHandler upTrigger)
         {
             this.eventBus = eventBus;
+            this.playerState = playerState;
             this.rb2d = rb2d;
             this.upTrigger = upTrigger;
 

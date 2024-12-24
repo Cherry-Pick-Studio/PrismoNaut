@@ -29,3 +29,10 @@ public enum ObstacleType
     Hollow,
     Block,
 }
+
+public enum PlatformType
+{
+    MovingPlatform,
+    FallingPlatform,
+    CrumblingPlatform,
+}

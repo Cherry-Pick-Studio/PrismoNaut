@@ -21,8 +21,8 @@ namespace PlayerSystem
         {
             this.eventBus = eventBus;
             this.playerState = playerState;
-            if (isSquarePowerAvailable) squarePower = new SquarePowerModule(eventBus, rb2d, triggers[Direction.Down]);
-            if (isTrianglePowerAvailable) trianglePower = new TrianglePowerModule(eventBus, rb2d, triggers[Direction.Up]);
+            if (isSquarePowerAvailable) squarePower = new SquarePowerModule(eventBus, playerState, rb2d, triggers[Direction.Down]);
+            if (isTrianglePowerAvailable) trianglePower = new TrianglePowerModule(eventBus, playerState, rb2d, triggers[Direction.Up]);
             if (isCirclePowerAvailable) circlePower = new CirclePowerModule(eventBus, playerState, rb2d, triggers[Direction.Left], triggers[Direction.Right]);
         }
     }
